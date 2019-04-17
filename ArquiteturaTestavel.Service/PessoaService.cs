@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ArquiteturaTestavel.Domain;
 using ArquiteturaTestavel.Repository;
 
@@ -14,7 +15,7 @@ namespace ArquiteturaTestavel.Service
             _pessoaRepository = new PessoaRepository();
         }
 
-        public bool Adicionar(string nome, DateTime dataNascimento)
+        public void Adicionar(string nome, DateTime dataNascimento)
         {
             if (string.IsNullOrWhiteSpace(nome))
             {
@@ -28,8 +29,7 @@ namespace ArquiteturaTestavel.Service
 
             try
             {
-                _pessoaRepository.Add(new Pessoa { Nome = nome, DataNascimento = dataNascimento });
-                return _pessoaRepository.Commit();
+                _pessoaRepository.Add(new Pessoa { Nome = nome, DataNascimento = dataNascimento, Id = Guid.NewGuid() });
             }
             catch (SqlException)
             {
@@ -37,7 +37,7 @@ namespace ArquiteturaTestavel.Service
             }
         }
 
-        public bool Editar(long id, DateTime dataNascimento)
+        public void Editar(Guid id, DateTime dataNascimento)
         {
             if (dataNascimento.Date > DateTime.Now.Date)
             {
@@ -52,7 +52,6 @@ namespace ArquiteturaTestavel.Service
             {
                 pessoa.DataNascimento = dataNascimento;
                 _pessoaRepository.Update(pessoa);
-                return _pessoaRepository.Commit();
             }
             catch (SqlException)
             {
@@ -60,6 +59,10 @@ namespace ArquiteturaTestavel.Service
             }
         }
 
+        public List<Pessoa> ObterTodos()
+        {
+            return _pessoaRepository.GetAll();
+        }
 
     }
 }
